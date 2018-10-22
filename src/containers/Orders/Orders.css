@@ -1,0 +1,14 @@
+.Orders {
+
+}
+
+.Orders ul {
+    list-style: none;
+}
+.Orders li {
+    display: inline-block;
+    text-transform: capitalize;
+    margin: 5px;
+    padding: 3px;
+    border: 1px solid #ccc;
+}

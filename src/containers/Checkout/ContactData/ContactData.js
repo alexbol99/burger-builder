@@ -14,7 +14,11 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Name'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true
             },
             street: {
                 elementType: 'input',
@@ -22,7 +26,11 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Street'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true
             },
             zipCode: {
                 elementType: 'input',
@@ -30,7 +38,13 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'ZIP Code'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                valid: true
             },
             country: {
                 elementType: 'input',
@@ -38,7 +52,11 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Country'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true
             },
             email: {
                 elementType: 'input',
@@ -46,7 +64,11 @@ class ContactData extends Component {
                     type: 'email',
                     placeholder: 'E-mail'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true
             },
             deliveryMethod: {
                 elementType: 'select',
@@ -56,7 +78,9 @@ class ContactData extends Component {
                         {value: 'cheapest', displayValue: "Cheapest"}
                     ]
                 },
-                value: ''
+                value: 'fastest',
+                validation: {},
+                valid: true
             }
         },
         loading: false
@@ -65,10 +89,14 @@ class ContactData extends Component {
     orderHandler = (event) => {
         event.preventDefault();
         this.setState({loading: true});
+        const formData = {};
+        for (let formElementId in this.state.orderForm) {
+            formData[formElementId] = this.state.orderForm[formElementId].value;
+        }
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            deliveryMethod: "fastest"
+            orderData: formData
         };
         axios.post('/orders.json', order)
             .then( response => {
@@ -84,6 +112,37 @@ class ContactData extends Component {
             });
 
     };
+
+    inputChangedHandler = (event, inputId) => {
+        const updatedOrderForm = {         // shallow clone the first level
+            ...this.state.orderForm
+        };
+        const updatedOrderFormElement = {  // shallow clone the nested level
+            ...updatedOrderForm[inputId]
+        };
+        updatedOrderFormElement.value = event.target.value;
+        updatedOrderFormElement.valid =
+            this.isValid(updatedOrderFormElement.value, updatedOrderFormElement.validation)
+        updatedOrderForm[inputId] = updatedOrderFormElement;
+        this.setState({orderForm: updatedOrderForm});   // works also without setState ??
+    };
+
+    isValid(value, rules) {
+        if (!rules)
+            return true;
+
+        if (rules.required && value.trim() === '')
+            return false;
+
+        if (rules.minLength && value.length < rules.minLength)
+            return false;
+
+        if (rules.maxLength && value.length > rules.maxLength)
+            return false;
+
+        return true;
+    }
+
     render() {
         let formElementsArray = [];
         for (let key in this.state.orderForm) {
@@ -92,18 +151,24 @@ class ContactData extends Component {
                 config: this.state.orderForm[key]
                 })
         }
+        let notValidElement = formElementsArray.find( (formElement) =>
+            !this.isValid(formElement.config.value, formElement.config.validation));
+        let disabled = notValidElement ? true : false;
+
         let form = (
-            <form>
+            <form onSubmit={this.orderHandler}>
                 {formElementsArray.map( formElement => (
                     <Input
                         key={formElement.id}
                         elementType={formElement.config.elementType}
                         elementConfig={formElement.config.elementConfig}
+                        value={formElement.config.value}
                         defaultValue={formElement.config.value}
-                        onChange={() => {}}
+                        valid={formElement.config.valid}
+                        changed={(event) => this.inputChangedHandler(event, formElement.id)}
                     />
                 ))}
-                <Button btnType="Success" onClick={this.orderHandler}>ORDER</Button>
+                <Button btnType="Success" disabled={disabled}>ORDER</Button>
             </form>
         );
         if (this.state.loading) {

@@ -8,7 +8,7 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-import * as actionType from '../../store/actions';
+import * as actions from '../../store/actions/burgerBuilder';
 
 class BurgerBuilder extends Component {
     state = {
@@ -94,13 +94,7 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount() {
-        // axios.get('/ingredients.json')
-        //     .then( resp => {
-        //         this.setState({ingredients: resp.data})
-        //     })
-        //     .catch( error => {
-        //         console.log(error)
-        //     })
+        this.props.onInitIngredients()
     }
 
     render() {
@@ -121,6 +115,7 @@ class BurgerBuilder extends Component {
                 </Modal>
 
                 <Burger ingredients={this.props.ingredients}/>
+
                 <BuildControls
                     ingredients={this.props.ingredients}
                     totalPrice={this.props.totalPrice}
@@ -137,14 +132,16 @@ class BurgerBuilder extends Component {
 const mapStateToProps = state => {
     return {
         ingredients: state.ingredients,
-        totalPrice: state.totalPrice
+        totalPrice: state.totalPrice,
+        error: state.error
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientAdded: (ingredientName) => dispatch({type:actionType.ADD_INGREDIENT, ingredientName}),
-        onIngredientRemoved: (ingredientName) => dispatch({type:actionType.REMOVE_INGREDIENT, ingredientName})
+        onIngredientAdded: (ingredientName) => dispatch(actions.addIngredient(ingredientName)),
+        onIngredientRemoved: (ingredientName) => dispatch(actions.removeIngredient(ingredientName)),
+        onInitIngredients: () => dispatch(actions.initIngredients())
     }
 };
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));

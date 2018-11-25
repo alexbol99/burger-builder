@@ -9,15 +9,15 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import burgerBuilder from './store/reducers/burgerBuilder';
-import order from './store/reducers/order';
+import orders from './store/reducers/orders';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(
-    combineReducers(
+    combineReducers({
         burgerBuilder,
-        order
-    ),
+        orders
+    }),
     composeEnhancers(
         applyMiddleware(thunk)
     )

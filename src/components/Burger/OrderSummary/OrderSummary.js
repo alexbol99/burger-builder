@@ -2,7 +2,7 @@ import React,{Fragment} from 'react';
 import Button from '../../UI/Button/Button';
 
 const orderSummary = (props) => {
-    const ingredientsSummary = Object.keys(props.ingredients)
+    const ingredientsSummary = props.ingredients ? Object.keys(props.ingredients)
         .map( type => {
             return (
                 <li key={type}>
@@ -10,7 +10,9 @@ const orderSummary = (props) => {
                     {props.ingredients[type]}
                 </li>
             )
-        });
+        }) : null;
+
+    const totalPrice = props.totalPrice ? props.totalPrice.toFixed(2) : "";
 
     return (
         <Fragment>
@@ -19,7 +21,7 @@ const orderSummary = (props) => {
             <ul>
                 {ingredientsSummary}
             </ul>
-            <p>Order price:<strong>{props.totalPrice.toFixed(2)}</strong></p>
+            <p>Order price:<strong>{totalPrice}</strong></p>
             <p>Continue to checkout?</p>
             <Button
                 btnType="Danger"

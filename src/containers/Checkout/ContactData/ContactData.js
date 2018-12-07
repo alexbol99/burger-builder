@@ -100,7 +100,8 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         };
         // axios.post('/orders.json', orders)
         //     .then( response => {
@@ -115,7 +116,7 @@ class ContactData extends Component {
         //         });
         //     });
 
-        this.props.onOrderBurger(order);
+        this.props.onOrderBurger(order, this.props.token);
     };
 
     inputChangedHandler = (event, inputId) => {
@@ -188,17 +189,19 @@ class ContactData extends Component {
     }
 }
 
-const mapStateToProps = ({burgerBuilder, orders}) => {
+const mapStateToProps = ({burgerBuilder, orders, auth}) => {
     return {
         ingredients: burgerBuilder.ingredients,
         price: burgerBuilder.totalPrice,
-        loading: orders.loading
+        loading: orders.loading,
+        token: auth.token,
+        userId: auth.userId
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onOrderBurger: (orderData) => dispatch(actions.purchaseBurger(orderData))
+        onOrderBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token))
     }
 };
 

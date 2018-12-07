@@ -6,10 +6,11 @@ import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as ordersActions from "../../store/actions/orders";
 import connect from "react-redux/es/connect/connect";
 import Spinner from "../../components/UI/Spinner/Spinner";
+// import {auth} from "../../store/actions/auth";
 
 class Orders extends Component {
     componentDidMount() {
-        this.props.fetchOrders();
+        this.props.fetchOrders(this.props.token, this.props.userId);
     }
     render() {
         return (
@@ -27,16 +28,18 @@ class Orders extends Component {
     }
 }
 
-const mapStateToProps = ({orders}) => {
+const mapStateToProps = ({orders, auth}) => {
     return {
         orders: orders.orders,
-        loading: orders.loading
+        loading: orders.loading,
+        token: auth.token,
+        userId: auth.userId
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        fetchOrders: () => dispatch(ordersActions.fetchOrders())
+        fetchOrders: (token, userId) => dispatch(ordersActions.fetchOrders(token, userId))
     }
 };
 
